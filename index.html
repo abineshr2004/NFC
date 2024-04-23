@@ -1,29 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web NFC Example</title>
-    <style>
-        #output {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            max-width: 400px;
-            overflow-wrap: break-word;
-        }
-        #error {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div id="output"></div>
-    <div id="error"></div>
-    <button onclick="startNFC()">Start NFC</button>
-    <button onclick="stopNFC()">Stop NFC</button>
-    <script src="script.js"></script>
-</body>
-</html>
+---
+feature_name: Web NFC
+chrome_version: 89
+feature_id: 6261030015467520
+check_min_version: true
+---
+
+<button id="scanButton">Scan</button>
+
+<div id="output"></div>
+
+<script>
+if (!("NDEFReader" in window))
+  console.error("Web NFC is not available. Use Chrome on Android.");
+
+const output = document.getElementById('output');
+const scanButton = document.getElementById('scanButton');
+
+scanButton.addEventListener('click', async () => {
+  try {
+    const ndef = new NDEFReader();
+    await ndef.scan();
+    ndef.addEventListener('reading', ({ message, serialNumber }) => {
+      output.innerHTML = `<p>Serial Number: ${serialNumber}</p>`;
+      output.innerHTML += "<p>Records:</p>";
+      for (const record of message.records) {
+        output.innerHTML += `<p>Record type: ${record.recordType}, MIME type: ${record.mediaType}, Data: ${record.data}</p>`;
+      }
+    });
+    console.log('NFC reader initialized.');
+  } catch (error) {
+    console.error('Error: ' + error);
+    output.textContent = 'Error: ' + error;
+  }
+});
+</script>
