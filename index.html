@@ -1,9 +1,4 @@
----
-feature_name: Web NFC
-chrome_version: 89
-feature_id: 6261030015467520
-check_min_version: true
----
+
 
 <button id="scanButton">Scan</button>
 
@@ -20,12 +15,8 @@ scanButton.addEventListener('click', async () => {
   try {
     const ndef = new NDEFReader();
     await ndef.scan();
-    ndef.addEventListener('reading', ({ message, serialNumber }) => {
-      output.innerHTML = `<p>Serial Number: ${serialNumber}</p>`;
-      output.innerHTML += "<p>Records:</p>";
-      for (const record of message.records) {
-        output.innerHTML += `<p>Record type: ${record.recordType}, MIME type: ${record.mediaType}, Data: ${record.data}</p>`;
-      }
+    ndef.addEventListener('reading', ({ serialNumber }) => {
+      output.textContent = `Serial Number: ${serialNumber}`;
     });
     console.log('NFC reader initialized.');
   } catch (error) {
