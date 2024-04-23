@@ -1,0 +1,17 @@
+
+
+<div id="output"></div>
+
+<script>
+const output = document.getElementById('output');
+
+// Listen for messages from other windows
+window.addEventListener('message', event => {
+  // Check if the message contains a serial number
+  if (event.data && event.data.serialNumber) {
+    const serialNumber = event.data.serialNumber;
+    // Display the serial number
+    output.textContent = `Serial Number: ${serialNumber}`;
+  }
+});
+</script>
