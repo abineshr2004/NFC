@@ -1,39 +1,20 @@
-let reader;
+scanButton.addEventListener("click", async () => {
+  log("User clicked scan button");
 
-async function startNFC() {
-    try {
-        reader = new NDEFReader();
-        await reader.scan();
-        reader.onreading = event => {
-            const output = document.getElementById('output');
-            output.innerHTML = ''; // Clear previous content
-            for (const record of event.message.records) {
-                const recordInfo = document.createElement('div');
-                recordInfo.textContent = `Record type: ${record.recordType}, MIME type: ${record.mediaType}, Data: ${record.data}`;
-                output.appendChild(recordInfo);
-            }
-        };
-        setError('');
-        setOutput('NFC reader initialized.');
-    } catch (error) {
-        console.error('Error: ' + error);
-        setError('Error: ' + error);
-        stopNFC();
-    }
-}
+  try {
+    const ndef = new NDEFReader();
+    await ndef.scan();
+    log("> Scan started");
 
-function stopNFC() {
-    if (reader) {
-        reader.stop();
-        reader = null;
-        setOutput('NFC reader stopped.');
-    }
-}
+    ndef.addEventListener("readingerror", () => {
+      log("Argh! Cannot read data from the NFC tag. Try another one?");
+    });
 
-function setOutput(message) {
-    document.getElementById('output').innerHTML = message;
-}
-
-function setError(message) {
-    document.getElementById('error').textContent = message;
-}
+    ndef.addEventListener("reading", ({ message, serialNumber }) => {
+      log(`> Serial Number: ${serialNumber}`);
+      log(`> Records: (${message.records.length})`);
+    });
+  } catch (error) {
+    log("Argh! " + error);
+  }
+});
