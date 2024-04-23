@@ -1,27 +1,32 @@
 
-<button id="scanButton">Scan</button>
 
 <div id="output"></div>
 
 <script>
-if (!("NDEFReader" in window))
+if (!("NDEFReader" in window)) {
   console.error("Web NFC is not available. Use Chrome on Android.");
-
-const output = document.getElementById('output');
-const scanButton = document.getElementById('scanButton');
-
-scanButton.addEventListener('click', async () => {
-  try {
-    const ndef = new NDEFReader();
-    await ndef.scan();
-    ndef.addEventListener('reading', ({ serialNumber }) => {
-      // Send the serial number to the other page using postMessage
-      window.postMessage({ serialNumber }, '*');
-    });
-    console.log('NFC reader initialized.');
-  } catch (error) {
-    console.error('Error: ' + error);
-    output.textContent = 'Error: ' + error;
-  }
-});
+} else {
+  const output = document.getElementById('output');
+  
+  // Function to handle NFC reading
+  const handleNFCReading = async ({ serialNumber }) => {
+    // Send the serial number to the other page using postMessage
+    window.postMessage({ serialNumber }, '*');
+    console.log('NFC tag detected:', serialNumber);
+    output.textContent = `NFC Tag Detected: ${serialNumber}`;
+  };
+  
+  // Start NFC scanning when the page loads
+  window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const ndef = new NDEFReader();
+      await ndef.scan();
+      ndef.addEventListener('reading', handleNFCReading);
+      console.log('NFC reader initialized.');
+    } catch (error) {
+      console.error('Error: ' + error);
+      output.textContent = 'Error: ' + error;
+    }
+  });
+}
 </script>
