@@ -1,5 +1,4 @@
 
-
 <button id="scanButton">Scan</button>
 
 <div id="output"></div>
@@ -16,7 +15,8 @@ scanButton.addEventListener('click', async () => {
     const ndef = new NDEFReader();
     await ndef.scan();
     ndef.addEventListener('reading', ({ serialNumber }) => {
-      output.textContent = `Serial Number: ${serialNumber}`;
+      // Send the serial number to the other page using postMessage
+      window.postMessage({ serialNumber }, '*');
     });
     console.log('NFC reader initialized.');
   } catch (error) {
